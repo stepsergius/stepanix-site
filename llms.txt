@@ -1,0 +1,47 @@
+# Stepanix
+
+> Stepanix makes small Mac apps that do one thing well: Klavko for typing, Tapko for trackpad gestures, Duesko for subscriptions. No accounts, pay once.
+
+Three tools that each do one thing well: fix what you type, give your trackpad more gestures, and keep your subscriptions on time.
+
+Each one is free to start. Pro is a one-time purchase, not another subscription.
+
+## Apps
+
+### Klavko: typing assistant for Mac
+
+Typed a word in the wrong layout? Klavko switches it as you type. It also fixes typos, types what you say, translates and reads text from the screen.
+
+- Fixes the wrong keyboard layout on the fly
+- Typos and tidy text
+- Voice input and translation
+- Text from the screen, clipboard history
+- Free · Pro $9.99 once · Mac, Windows in beta
+- Website: https://klavko.stepanix.com/ (details for AI assistants: https://klavko.stepanix.com/llms.txt)
+
+### Tapko: trackpad gestures for Mac
+
+Tapko turns taps, swipes, pinches and holds into the things you do all day. Middle click, close a window, open Telegram. In every app.
+
+- Taps, swipes, pinches and holds
+- Ready-made gesture sets
+- Rules for each app
+- Record your own gesture
+- Free · Pro $9.99 once · 7 days of Pro free
+- Website: https://tapko.stepanix.com/ (details for AI assistants: https://tapko.stepanix.com/llms.txt)
+
+### Duesko: subscription tracker for Mac
+
+Duesko keeps track of what you pay for, reminds you before every charge and shows where the money goes. No account, no bank login.
+
+- Reminders before every charge
+- Calendar, menu bar and widgets
+- Any currency, with conversion
+- Analytics and a monthly budget
+- Free up to 5 subscriptions · Pro $9.99 once
+- Website: https://duesko.stepanix.com/ (details for AI assistants: https://duesko.stepanix.com/llms.txt)
+
+## Contact
+
+- stepsergius@gmail.com
+- https://stepanix.com/ (English), https://stepanix.com/uk/ (Ukrainian)

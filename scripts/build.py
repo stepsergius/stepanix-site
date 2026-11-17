@@ -6,6 +6,7 @@
 To add an app: put its icon (384 px PNG) and a dark screenshot per language (WebP) in assets/,
 add an entry to APPS below, run the script and push.
 """
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -297,6 +298,55 @@ document.documentElement.classList.add("js");
 </script>"""
 
 
+CATEGORY = {"klavko": "UtilitiesApplication", "tapko": "UtilitiesApplication", "duesko": "FinanceApplication"}
+
+
+def structured(lang):
+    """What search engines and AI assistants read: who Stepanix is and which apps it makes."""
+    here = HOST + ("/" if lang == "en" else "/uk/")
+    org = {
+        "@context": "https://schema.org", "@type": "Organization", "name": "Stepanix", "url": HOST + "/",
+        "logo": f"{HOST}/assets/apple-touch-icon.png", "email": EMAIL, "description": T[lang]["description"],
+    }
+    site = {"@context": "https://schema.org", "@type": "WebSite", "name": "Stepanix", "url": here, "inLanguage": lang}
+    apps = {
+        "@context": "https://schema.org", "@type": "ItemList", "name": T[lang]["apps_h"],
+        "itemListElement": [{
+            "@type": "ListItem", "position": i + 1,
+            "item": {
+                "@type": "SoftwareApplication", "name": a["name"], "url": a["url"] + ("" if lang == "en" else "uk/"),
+                "description": a[lang]["text"], "applicationCategory": CATEGORY.get(a["id"], "UtilitiesApplication"),
+                "operatingSystem": "macOS", "image": f"{HOST}/assets/{a['id']}.png",
+                "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+                "author": {"@type": "Organization", "name": "Stepanix", "url": HOST + "/"},
+            },
+        } for i, a in enumerate(APPS)],
+    }
+    return "\n".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False)}</script>' for x in (org, site, apps))
+
+
+def sitemap():
+    links = (f'    <xhtml:link rel="alternate" hreflang="en" href="{HOST}/"/>\n'
+             f'    <xhtml:link rel="alternate" hreflang="uk" href="{HOST}/uk/"/>\n'
+             f'    <xhtml:link rel="alternate" hreflang="x-default" href="{HOST}/"/>\n')
+    urls = "".join(f"  <url>\n    <loc>{HOST}/{tail}</loc>\n{links}  </url>\n" for tail in ("", "uk/"))
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+            'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + urls + "</urlset>\n")
+
+
+def llms():
+    """llms.txt: Stepanix and its apps as plain text for AI assistants."""
+    t = T["en"]
+    lines = ["# Stepanix", "", "> " + t["description"], "", t["lead"], "", t["apps_p"], "", "## Apps", ""]
+    for a in APPS:
+        x = a["en"]
+        lines += [f"### {a['name']}: {x['kind'].lower()} for Mac", "", x["text"], "",
+                  *[f"- {point}" for point in x["points"]], f"- {x['meta']}",
+                  f"- Website: {a['url']} (details for AI assistants: {a['url']}llms.txt)", ""]
+    lines += ["## Contact", "", f"- {EMAIL}", f"- {HOST}/ (English), {HOST}/uk/ (Ukrainian)", ""]
+    return "\n".join(lines)
+
+
 def page(lang):
     t = T[lang]
     p = "" if lang == "en" else "../"
@@ -338,12 +388,22 @@ def page(lang):
 <meta name="theme-color" content="#07090f">
 <title>{t['title']}</title>
 <meta name="description" content="{t['description']}">
+<link rel="canonical" href="{HOST}/{'' if lang == 'en' else 'uk/'}">
 <link rel="alternate" hreflang="en" href="{HOST}/">
 <link rel="alternate" hreflang="uk" href="{HOST}/uk/">
 <link rel="alternate" hreflang="x-default" href="{HOST}/">
 <meta property="og:title" content="{t['title']}">
 <meta property="og:description" content="{t['description']}">
-<meta property="og:image" content="{HOST}/assets/duesko-{lang}.webp">
+<meta property="og:image" content="{HOST}/assets/og-{lang}.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{HOST}/{'' if lang == 'en' else 'uk/'}">
+<meta property="og:site_name" content="Stepanix">
+<meta property="og:locale" content="{'en_US' if lang == 'en' else 'uk_UA'}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{HOST}/assets/og-{lang}.jpg">
+{structured(lang)}
 <link rel="icon" href="{p}favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{p}assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -427,6 +487,9 @@ def main():
     (ROOT / "favicon.svg").write_text(FAVICON, encoding="utf-8")
     (ROOT / "CNAME").write_text("stepanix.com", encoding="utf-8")
     (ROOT / ".nojekyll").write_text("", encoding="utf-8")
+    (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {HOST}/sitemap.xml\n", encoding="utf-8")
+    (ROOT / "sitemap.xml").write_text(sitemap(), encoding="utf-8")
+    (ROOT / "llms.txt").write_text(llms(), encoding="utf-8")
     print("Built", ROOT)
 
 
